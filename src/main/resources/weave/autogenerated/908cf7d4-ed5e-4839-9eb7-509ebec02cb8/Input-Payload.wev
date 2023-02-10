@@ -1,0 +1,66 @@
+%dw 2.0
+
+type auto_908cf7d4_ed5e_4839_9eb7_509ebec02cb8_Input_Payload = {|
+  "0": org_mule_runtime_api_message_Message, 
+  "1": org_mule_runtime_api_message_Message_12
+|}
+type org_mule_runtime_api_message_Message_12 = {|
+  payload: Any, 
+  attributes: anonymousType_1
+|} {"typeId": "org.mule.runtime.api.message.Message"}
+type anonymousType_1 = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {| "X-Request-ID": String |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|
+    port: String, 
+    host: String
+  |}, 
+  version: String, 
+  localAddress: String
+|}
+
+
+
+
+type org_mule_runtime_api_message_Message = {|
+  payload: Any, 
+  attributes: {|
+    clientCertificate?: {|
+      publicKey?: {|  |}, 
+      "type"?: String, 
+      encoded?: Binary
+    |}, 
+    headers: {| "X-Request-ID": String |}, 
+    listenerPath: String, 
+    method: String, 
+    queryParams: {|  |}, 
+    queryString: String, 
+    relativePath: String, 
+    remoteAddress: String, 
+    requestPath: String, 
+    requestUri: String, 
+    scheme: String, 
+    uriParams: {|
+      port: String, 
+      host: String
+    |}, 
+    version: String, 
+    localAddress: String
+  |}
+|} {"typeId": "org.mule.runtime.api.message.Message"}
+
+
+

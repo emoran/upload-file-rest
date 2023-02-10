@@ -1,0 +1,26 @@
+#%RAML 1.0
+title: sfdc-system-api
+baseUri: https://{host}:{port}/sfdc-sapi/v1
+version: v1
+
+traits: 
+  hasHeaders: !include traits/has-request-id.raml
+
+/content-document/upload:
+    post:
+      is:
+        - hasHeaders
+      body:
+        multipart/form-data:
+          type: !include dataTypes/contentDocumentUploadDT.raml          
+      responses:
+        201:
+          body:
+            application/json:
+              type: !include dataTypes/contentDocumentUploadResponseDT.raml
+              example: !include examples/contentDocumentUploadSuccessSample.json
+        401:
+          body:
+            application/json:
+               type: !include dataTypes/contentDocumentUploadResponseDT.raml
+               example:   

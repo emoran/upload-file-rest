@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<flow name="sfdc-file-upload" doc:id="908cf7d4-ed5e-4839-9eb7-509ebec02cb8">
+		<ee:transform doc:name="Map File to ContentVersion Object" doc:id="9ca9fc37-ece0-4a06-b105-50c46b03e10b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::core::Binaries
+output application/java
+---
+[{
+	PathOnClient: vars.fileName,
+	VersionData: vars.fileContent as Binary {
+		class: "byte[]"
+	}
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:upsert objectType="ContentVersion" externalIdFieldName="Id" doc:name="Upload File" doc:id="68e52418-703f-4762-9fcd-eae97d2a2800" config-ref="Salesforce_Config"/>
+		
+		<salesforce:query doc:name="Get Content Document Id" doc:id="6d34b6d4-85bd-46fe-a858-d9af37cc9f1d" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT ContentDocumentId FROM ContentVersion WHERE Id = ':cvId']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	"cvId" : payload.items[0].id
+}]]]></salesforce:parameters>
+		</salesforce:query>	
+				<ee:transform doc:name="Map Document Link" doc:id="50ac73a3-4665-4ef5-bd26-7f5dbfab19e4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	LinkedEntityId: vars.accountId as String,
+	ContentDocumentId: payload01.ContentDocumentId
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:upsert objectType="ContentDocumentLink" externalIdFieldName="Id" doc:name="Create Content Document Link" doc:id="dd916708-24aa-4e21-be6b-c9b7601032ee" config-ref="Salesforce_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ff358bac-d6f3-4629-9d8b-0684a6052e2f" message="#[output application/json --- payload]"/>
+	</flow>
+</mule>
